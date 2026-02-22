@@ -1,0 +1,50 @@
+[
+  {
+    "name": "prd",
+    "description": "Generate Product Requirements Document",
+    "category": "Product Management",
+    "roles": ["product-manager"],
+    "usage": "/ion prd [feature description]",
+    "prompt": "Generate a Product Requirements Document for: {input}\n\nInclude: Overview, Goals, User Stories, Requirements, Success Metrics, Timeline."
+  },
+  {
+    "name": "user-story",
+    "description": "Generate user story",
+    "category": "Product Management",
+    "roles": ["product-manager"],
+    "usage": "/ion user-story [feature]",
+    "prompt": "Generate a user story for: {input}\n\nFormat: As a [user], I want [goal], so that [benefit].\nInclude acceptance criteria."
+  },
+  {
+    "name": "summarize",
+    "description": "Summarize discussion or thread",
+    "category": "General",
+    "roles": ["all"],
+    "usage": "/ion summarize",
+    "prompt": "Summarize the key points, decisions, and action items from this discussion."
+  },
+  {
+    "name": "decisions",
+    "description": "Search past decisions",
+    "category": "General",
+    "roles": ["all"],
+    "usage": "/ion decisions [topic]",
+    "prompt": "Search for and list product/technical decisions related to: {input}"
+  },
+  {
+    "name": "design-review",
+    "description": "Review design with context",
+    "category": "Design",
+    "roles": ["product-designer", "product-manager"],
+    "usage": "/ion design-review [link or description]",
+    "prompt": "Provide a design review for: {input}\n\nConsider: UX, accessibility, consistency, technical feasibility, user needs."
+  },
+  {
+    "name": "api-spec",
+    "description": "Generate API specification",
+    "category": "Engineering",
+    "roles": ["software-engineer", "engineering-manager"],
+    "usage": "/ion api-spec [endpoint description]",
+    "prompt": "Generate an API specification for: {input}\n\nInclude: endpoints, parameters, request/response formats, authentication, error codes."
+  }
+]

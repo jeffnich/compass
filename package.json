@@ -1,0 +1,31 @@
+{
+  "name": "ion-slack-bot",
+  "version": "1.0.0",
+  "description": "Ion - AI-powered Slack bot that learns your org",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "slack",
+    "bot",
+    "ai",
+    "openai",
+    "mcp"
+  ],
+  "author": "Jeff",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@slack/bolt": "^3.17.1",
+    "dotenv": "^16.4.1",
+    "openai": "^4.28.0",
+    "pg": "^8.11.3",
+    "pgvector": "^0.1.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}

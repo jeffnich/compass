@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ion": {
+      "command": "node",
+      "args": [
+        "/Users/agenthost/.openclaw/workspace/ion-slack-bot/mcp/server.js"
+      ],
+      "env": {
+        "DATABASE_URL": "postgresql://localhost/ion_slack"
+      }
+    }
+  }
+}

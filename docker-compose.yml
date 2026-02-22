@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Ion Slack Bot
+  ion-bot:
+    build: .
+    container_name: ion-slack-bot
+    environment:
+      # Slack credentials (set in .env file)
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
+      
+      # OpenAI API key
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # Database connection
+      - DATABASE_URL=postgresql://ion:ion_password@db:5432/ion_slack
+      
+      # Server config
+      - NODE_ENV=production
+      - PORT=3001
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ion-network
+    ports:
+      - "3001:3001"
+
+  # PostgreSQL with pgvector
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: ion-postgres
+    environment:
+      - POSTGRES_DB=ion_slack
+      - POSTGRES_USER=ion
+      - POSTGRES_PASSWORD=ion_password
+    volumes:
+      # Persist database data
+      - pgdata:/var/lib/postgresql/data
+      
+      # Initialize schema on first run
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ion -d ion_slack"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ion-network
+    ports:
+      - "5432:5432"
+
+networks:
+  ion-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local

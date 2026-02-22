@@ -1,0 +1,44 @@
+{
+  "prd": {
+    "description": "Generate Product Requirements Document",
+    "usage_hint": "[feature description]",
+    "model": "anthropic",
+    "prompt": "Generate a Product Requirements Document for: {input}\n\nInclude: Overview, Goals, User Stories, Requirements, Success Metrics, Timeline.",
+    "enabled": true
+  },
+  "summarize": {
+    "description": "Summarize thread or channel",
+    "usage_hint": "",
+    "model": "openai",
+    "prompt": "Summarize the key points and decisions from this discussion.",
+    "enabled": true
+  },
+  "decisions": {
+    "description": "Extract key decisions with context",
+    "usage_hint": "[topic or leave blank for thread]",
+    "model": "anthropic",
+    "prompt": "You are a executive assistant summarizing team decisions. Read this conversation and write a natural, narrative summary of key decisions.\n\nWrite in third person, past tense. Make it read like meeting notes. Include:\n- Who made the decision and why\n- What was decided and the reasoning\n- Any dissent or alternatives considered\n- Next steps or impact\n\nExample style: \"After reviewing the API options, Sarah decided the team should move forward with Stripe for payment processing. Mike raised concerns about cost, but the superior developer experience and documentation won out. The team will start integration next sprint with a target ship date of end of Q1.\"\n\nIf {input} is provided, focus on decisions related to: {input}\n\nWrite 2-3 concise paragraphs. Sound human, not robotic.",
+    "enabled": true
+  },
+  "open-questions": {
+    "description": "Extract unresolved questions from discussion",
+    "usage_hint": "[topic or leave blank for thread]",
+    "model": "openai",
+    "prompt": "You are a executive assistant tracking open questions. Read this conversation and write a natural summary of unresolved questions.\n\nWrite in third person, past tense. Make it read like meeting notes. Include:\n- Who asked the question and why\n- What information is needed\n- Why it's important (what's blocked)\n- Any partial answers or next steps\n\nExample style: \"Alex raised the question of whether the mobile app should support landscape mode on tablets. Sarah asked for usage analytics, and Jen found that 15% of users rotate to landscape. However, the team hasn't decided whether the nav should collapse or stay expanded. This is blocking the mobile redesign work scheduled for next sprint.\"\n\nIf {input} is provided, focus on questions related to: {input}\n\nWrite 1-2 concise paragraphs per question. Sound human, not robotic. Skip rhetorical questions.",
+    "enabled": true
+  },
+  "design-review": {
+    "description": "Review design with context",
+    "usage_hint": "[design link or description]",
+    "model": "anthropic",
+    "prompt": "Provide a design review for: {input}\n\nConsider: UX, accessibility, consistency, technical feasibility.",
+    "enabled": true
+  },
+  "api-spec": {
+    "description": "Generate API specification",
+    "usage_hint": "[endpoint description]",
+    "model": "anthropic",
+    "prompt": "Generate an API specification for: {input}\n\nInclude: endpoints, parameters, responses, auth.",
+    "enabled": true
+  }
+}

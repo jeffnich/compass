@@ -1,0 +1,68 @@
+display_information:
+  name: Ion
+  description: AI teammate that learns from your conversations
+  background_color: "#2c5ff6"
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: ion
+    always_online: true
+  slash_commands:
+    - command: /ion
+      description: Run Ion commands dynamically
+      usage_hint: "[command] [args]"
+      should_escape: false
+    - command: /ion-help
+      description: Show Ion help and available commands
+      usage_hint: ""
+      should_escape: false
+    - command: /prd
+      description: Generate Product Requirements Document
+      usage_hint: "[feature description]"
+      should_escape: false
+    - command: /summarize
+      description: Summarize thread or channel
+      usage_hint: ""
+      should_escape: false
+    - command: /decisions
+      description: Search past product/technical decisions
+      usage_hint: "[topic]"
+      should_escape: false
+    - command: /design-review
+      description: Review design with context
+      usage_hint: "[design link or description]"
+      should_escape: false
+    - command: /api-spec
+      description: Generate API specification
+      usage_hint: "[endpoint description]"
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - channels:read
+      - chat:write
+      - commands
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - im:write
+      - mpim:history
+      - mpim:read
+      - users:read
+settings:
+  event_subscriptions:
+    bot_events:
+      - app_home_opened
+      - app_mention
+      - message.im
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false
