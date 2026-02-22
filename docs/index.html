@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ion Command Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1>Ion Command Manager</h1>
+        <nav class="nav-links">
+          <a href="/" class="nav-link active">Commands</a>
+          <a href="/insights.html?tab=overview" class="nav-link">Overview</a>
+          <a href="/insights.html?tab=decisions" class="nav-link">Decisions</a>
+          <a href="/insights.html?tab=questions" class="nav-link">Questions</a>
+        </nav>
+      </div>
+      <div class="header-actions">
+        <button id="new-cmd-btn" class="btn btn-primary">+ New Command</button>
+      </div>
+    </header>
+
+    <!-- Stats Dashboard -->
+    <div id="stats-panel" class="stats-panel">
+      <div class="stat-card">
+        <div class="stat-label">Total Commands</div>
+        <div class="stat-value" id="stat-total">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Uses (7d)</div>
+        <div class="stat-value" id="stat-uses">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Success Rate</div>
+        <div class="stat-value" id="stat-success">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Est. Cost (30d)</div>
+        <div class="stat-value" id="stat-cost">-</div>
+      </div>
+    </div>
+
+    <!-- Command List -->
+    <div id="command-list" class="command-list">
+      <div class="loading">Loading commands...</div>
+    </div>
+
+    <!-- Command Editor Modal -->
+    <div id="editor-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">New Command</h2>
+          <button class="modal-close" onclick="closeEditor()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Command Name</label>
+            <input type="text" id="cmd-name" placeholder="/command-name" />
+            <small>Lowercase letters, numbers, and hyphens only</small>
+            <small style="margin-top: 5px; color: #2563eb;">
+              Use <strong>/ion [command-name]</strong> in Slack (no registration needed!)
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="cmd-description" placeholder="What does this command do?" />
+          </div>
+
+          <div class="form-group">
+            <label>Type</label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="cmd-type" value="llm" checked />
+                LLM Response (AI-generated)
+              </label>
+              <label>
+                <input type="radio" name="cmd-type" value="deterministic" />
+                Static Response (pre-written)
+              </label>
+            </div>
+          </div>
+
+          <!-- LLM Options -->
+          <div id="llm-options">
+            <div class="form-group">
+              <label>AI Model</label>
+              <select id="cmd-model">
+                <option value="openai">OpenAI GPT-4 (fast, $0.015/1K)</option>
+                <option value="anthropic">Anthropic Claude Haiku (cheap, $0.001/1K)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Prompt Template</label>
+              <textarea id="cmd-prompt" rows="8" placeholder="Your prompt here. Use {input} for user text."></textarea>
+              <small class="hint">Variables: {input}, {user}, {channel}</small>
+            </div>
+          </div>
+
+          <!-- Static Response Options -->
+          <div id="static-options" class="hidden">
+            <div class="form-group">
+              <label>Static Response</label>
+              <textarea id="cmd-response" rows="8" placeholder="The response Ion will send..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="cmd-enabled" checked />
+              <span>Enabled (command is active in Slack)</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <div class="form-actions-left">
+              <button id="delete-btn" class="btn btn-danger" style="display: none;">Delete Command</button>
+            </div>
+            <div class="form-actions-right">
+              <button id="test-btn" class="btn btn-secondary">Test Command</button>
+              <button id="save-btn" class="btn btn-primary">Save Command</button>
+              <button class="btn btn-text" onclick="closeEditor()">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Test Panel -->
+          <div id="test-panel" class="test-panel hidden">
+            <h3>Test Command</h3>
+            <input type="text" id="test-input" placeholder="Test input..." />
+            <button onclick="runTest()" class="btn btn-secondary">Run Test</button>
+            <div id="test-result" class="test-result"></div>
+          </div>
+
+          <!-- Version History -->
+          <div id="version-panel" class="version-panel hidden">
+            <h3>Version History</h3>
+            <div id="version-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template Browser Modal -->
+    <div id="template-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📚 Command Templates</h2>
+          <button class="modal-close" onclick="closeTemplates()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="template-list" class="template-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

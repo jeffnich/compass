@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Intelligence - Ion</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="insights.css">
+  <script src="demo-data.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1>Ion Command Manager</h1>
+        <nav class="nav-links">
+          <a href="/" class="nav-link">Commands</a>
+          <a href="/insights.html?tab=overview" class="nav-link active" data-tab="overview">Overview</a>
+          <a href="/insights.html?tab=decisions" class="nav-link" data-tab="decisions">Decisions</a>
+          <a href="/insights.html?tab=questions" class="nav-link" data-tab="questions">Questions</a>
+        </nav>
+      </div>
+      <div class="header-actions">
+        <select id="time-range" class="time-range-picker">
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <button id="refresh-btn" class="btn btn-secondary">Refresh</button>
+        <button id="analyze-btn" class="btn btn-primary">Run Analysis</button>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p>Loading insights...</p>
+    </div>
+
+    <!-- Tab: Overview -->
+    <div id="tab-overview" class="tab-content active">
+      <!-- Activity Overview -->
+      <section class="insights-section">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Messages</div>
+            <div class="stat-value" id="stat-messages">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Channels</div>
+            <div class="stat-value" id="stat-channels">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Users</div>
+            <div class="stat-value" id="stat-users">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Commands Used</div>
+            <div class="stat-value" id="stat-commands">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Topics Trending</div>
+            <div class="stat-value" id="stat-topics">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trending Topics -->
+      <section class="insights-section">
+        <div class="section-header">
+          <h2>Trending Topics</h2>
+        </div>
+        <div id="topics-list" class="topics-grid">
+          <div class="empty-state">
+            <p>No trending topics yet</p>
+            <small>Run analysis to identify discussion topics</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Activity -->
+      <section class="insights-section">
+        <div class="section-header">
+          <h2>Team Activity</h2>
+        </div>
+        <div id="activity-table" class="activity-table">
+          <div class="empty-state">
+            <p>No activity data</p>
+            <small>Loading team activity...</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Suggestions -->
+      <section class="insights-section suggestions-section">
+        <div class="section-header">
+          <h2>Ask Ion About...</h2>
+        </div>
+        <div id="suggestions-list" class="suggestions-list">
+          <div class="empty-state">
+            <p>No suggestions yet</p>
+            <small>AI will suggest questions you can ask Ion</small>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab: Key Decisions -->
+    <div id="tab-decisions" class="tab-content">
+      <section class="insights-section">
+        <div class="section-header">
+          <h2>Key Decisions</h2>
+          <span class="count-badge" id="decisions-count">0</span>
+        </div>
+        <div id="decisions-list" class="insights-list">
+          <div class="empty-state">
+            <p>No decisions extracted yet</p>
+            <small>Run analysis to find key decisions</small>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab: Open Questions -->
+    <div id="tab-questions" class="tab-content">
+      <section class="insights-section">
+        <div class="section-header">
+          <h2>Open Questions</h2>
+          <span class="count-badge" id="questions-count">0</span>
+        </div>
+        <div id="questions-list" class="insights-list">
+          <div class="empty-state">
+            <p>No open questions found</p>
+            <small>Run analysis to find unanswered questions</small>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="insights.js"></script>
+</body>
+</html>

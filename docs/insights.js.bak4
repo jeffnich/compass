@@ -1,0 +1,443 @@
+/**
+ * Workspace Intelligence Dashboard
+ * Frontend logic for insights page
+ */
+
+const API_BASE = window.location.origin + '/api/insights';
+let currentTimeRange = 7;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Initializing Workspace Intelligence Dashboard');
+  
+  setupEventListeners();
+  loadDashboard();
+});
+
+function setupEventListeners() {
+  // Time range selector
+  const timeRange = document.getElementById('time-range');
+  if (timeRange) {
+    timeRange.addEventListener('change', (e) => {
+      currentTimeRange = parseInt(e.target.value);
+      loadDashboard();
+    });
+  }
+
+  // Refresh button
+  const refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      loadDashboard();
+    });
+  }
+
+  // Analyze button
+  const analyzeBtn = document.getElementById('analyze-btn');
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', () => {
+      runAnalysis();
+    });
+  }
+}
+
+async function loadDashboard() {
+  showLoading(true);
+  
+  try {
+    await Promise.all([
+      loadOverview(),
+      loadDecisions(),
+      loadQuestions(),
+      loadTopics(),
+      loadActivity(),
+      loadSuggestions(),
+    ]);
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+    showError('Failed to load dashboard data');
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function loadOverview() {
+  try {
+    const response = await fetch(`${API_BASE}/overview?days=${currentTimeRange}`);
+    const data = await response.json();
+    
+    if (data.stats) {
+      document.getElementById('stat-messages').textContent = formatNumber(data.stats.messages);
+      document.getElementById('stat-channels').textContent = formatNumber(data.stats.channels);
+      document.getElementById('stat-users').textContent = formatNumber(data.stats.users);
+      document.getElementById('stat-commands').textContent = formatNumber(data.stats.commands);
+      document.getElementById('stat-topics').textContent = formatNumber(data.stats.topics);
+    }
+  } catch (error) {
+    console.error('Error loading overview:', error);
+  }
+}
+
+async function loadDecisions() {
+  try {
+    const response = await fetch(`${API_BASE}/decisions?days=${currentTimeRange}&limit=20`);
+    const data = await response.json();
+    
+    const container = document.getElementById('decisions-list');
+    const countBadge = document.getElementById('decisions-count');
+    
+    if (data.decisions && data.decisions.length > 0) {
+      countBadge.textContent = data.decisions.length;
+      container.innerHTML = data.decisions.map(d => renderDecisionCard(d)).join('');
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          
+          <p>No decisions found</p>
+          <small>Run analysis to extract key decisions from conversations</small>
+        </div>
+      `;
+      countBadge.textContent = '0';
+    }
+  } catch (error) {
+    console.error('Error loading decisions:', error);
+  }
+}
+
+async function loadQuestions() {
+  try {
+    const response = await fetch(`${API_BASE}/questions?status=open&days=${currentTimeRange}&limit=20`);
+    const data = await response.json();
+    
+    const container = document.getElementById('questions-list');
+    const countBadge = document.getElementById('questions-count');
+    
+    if (data.questions && data.questions.length > 0) {
+      countBadge.textContent = data.questions.length;
+      container.innerHTML = data.questions.map(q => renderQuestionCard(q)).join('');
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          
+          <p>No open questions</p>
+          <small>Run analysis to find unanswered questions</small>
+        </div>
+      `;
+      countBadge.textContent = '0';
+    }
+  } catch (error) {
+    console.error('Error loading questions:', error);
+  }
+}
+
+async function loadTopics() {
+  try {
+    const response = await fetch(`${API_BASE}/topics?days=${currentTimeRange}&limit=10`);
+    const data = await response.json();
+    
+    const container = document.getElementById('topics-list');
+    
+    if (data.topics && data.topics.length > 0) {
+      container.innerHTML = data.topics.map(t => renderTopicCard(t)).join('');
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          
+          <p>No trending topics</p>
+          <small>Run analysis to identify discussion topics</small>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading topics:', error);
+  }
+}
+
+async function loadActivity() {
+  try {
+    const response = await fetch(`${API_BASE}/activity?days=${currentTimeRange}`);
+    const data = await response.json();
+    
+    const container = document.getElementById('activity-table');
+    
+    if (data.activity && data.activity.length > 0) {
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Messages</th>
+              <th>Channels</th>
+              <th>Last Active</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.activity.map(a => renderActivityRow(a)).join('')}
+          </tbody>
+        </table>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          
+          <p>No activity data</p>
+          <small>Activity will appear here once messages are indexed</small>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading activity:', error);
+  }
+}
+
+async function loadSuggestions() {
+  try {
+    const response = await fetch(`${API_BASE}/suggestions`);
+    const data = await response.json();
+    
+    const container = document.getElementById('suggestions-list');
+    
+    if (data.suggestions && data.suggestions.length > 0) {
+      container.innerHTML = data.suggestions.map(s => renderSuggestionCard(s)).join('');
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          
+          <p>No suggestions yet</p>
+          <small>AI will suggest useful questions based on recent activity</small>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading suggestions:', error);
+  }
+}
+
+function renderDecisionCard(decision) {
+  const statusBadge = getStatusBadge(decision.status);
+  const confidence = (decision.confidence * 100).toFixed(0);
+  const users = decision.mentioned_users ? decision.mentioned_users.slice(0, 3).join(', ') : 'Unknown';
+  const date = formatDate(decision.created_at);
+  
+  return `
+    <div class="insight-card" onclick="openThread('${decision.channel_id}', '${decision.thread_ts}')">
+      <div class="insight-header">
+        
+        <div class="insight-content">
+          <div class="insight-summary">${escapeHtml(decision.summary)}</div>
+          <div class="insight-meta">
+            <span>📅 ${date}</span>
+            ${decision.channel_name ? `<span>#${decision.channel_name}</span>` : ''}
+            ${users} involved
+          </div>
+        </div>
+      </div>
+      <div class="insight-footer">
+        <span class="badge ${statusBadge.class}">${statusBadge.text}</span>
+        <span class="confidence-score">${confidence}% confidence</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderQuestionCard(question) {
+  const date = formatDate(question.created_at);
+  const replyCount = question.reply_count || 0;
+  
+  return `
+    <div class="insight-card" onclick="openThread('${question.channel_id}', '${question.thread_ts}')">
+      <div class="insight-header">
+        
+        <div class="insight-content">
+          <div class="insight-summary">${escapeHtml(question.summary)}</div>
+          <div class="insight-meta">
+            <span>📅 ${date}</span>
+            ${question.channel_name ? `<span>#${question.channel_name}</span>` : ''}
+            <span>💬 ${replyCount} replies</span>
+          </div>
+        </div>
+      </div>
+      <div class="insight-footer">
+        <span class="badge badge-warning">No decision yet</span>
+        <a href="#" class="insight-link" onclick="event.stopPropagation()">Answer this →</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderTopicCard(topic) {
+  const trendIcon = getTrendIcon(topic.trend_direction);
+  const channels = topic.top_channels ? topic.top_channels.slice(0, 3) : [];
+  
+  return `
+    <div class="topic-card">
+      <div class="topic-header">
+        <div class="topic-name">${escapeHtml(topic.topic_name)}</div>
+        <div class="topic-trend">${trendIcon}</div>
+      </div>
+      <div class="topic-count">${formatNumber(topic.current_count)}</div>
+      <div class="topic-label">mentions</div>
+      ${channels.length > 0 ? `
+        <div class="topic-channels">
+          📢 ${channels.map(c => `<span class="channel-tag">#${c}</span>`).join(' ')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderActivityRow(activity) {
+  const name = activity.display_name || activity.real_name || activity.user_id;
+  const initials = getInitials(name);
+  const channels = activity.channels ? activity.channels.slice(0, 3) : [];
+  const lastActive = formatDate(activity.last_active);
+  
+  return `
+    <tr>
+      <td>
+        <div class="user-info">
+          <div class="user-avatar">${initials}</div>
+          <div class="user-name">${escapeHtml(name)}</div>
+        </div>
+      </td>
+      <td><strong>${formatNumber(activity.message_count)}</strong></td>
+      <td>
+        <div class="channel-tags">
+          ${channels.map(c => `<span class="channel-tag">#${c}</span>`).join('')}
+        </div>
+      </td>
+      <td>${lastActive}</td>
+    </tr>
+  `;
+}
+
+function renderSuggestionCard(suggestion) {
+  return `
+    <div class="suggestion-card" onclick="copySuggestion('${escapeHtml(suggestion.suggestion_text)}')">
+      <div class="suggestion-text">${escapeHtml(suggestion.suggestion_text)}</div>
+    </div>
+  `;
+}
+
+async function runAnalysis() {
+  const btn = document.getElementById('analyze-btn');
+  const originalText = btn.textContent;
+  
+  btn.textContent = '⚡ Analyzing...';
+  btn.disabled = true;
+  
+  try {
+    const response = await fetch(`${API_BASE}/analyze`, { method: 'POST' });
+    const data = await response.json();
+    
+    // Show success message
+    showSuccess('Analysis started! Results will appear shortly.');
+    
+    // Reload dashboard after a delay
+    setTimeout(() => {
+      loadDashboard();
+    }, 3000);
+  } catch (error) {
+    console.error('Error running analysis:', error);
+    showError('Failed to start analysis');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// Utility functions
+function showLoading(show) {
+  const overlay = document.getElementById('loading');
+  if (overlay) {
+    overlay.classList.toggle('hidden', !show);
+  }
+}
+
+function showSuccess(message) {
+  // Simple console log for now - could be replaced with toast notification
+  console.log('✅', message);
+  alert(message);
+}
+
+function showError(message) {
+  console.error('❌', message);
+  alert(message);
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function getStatusBadge(status) {
+  const badges = {
+    implemented: { text: '✅ Implemented', class: 'badge-success' },
+    pending: { text: '⏳ Pending', class: 'badge-pending' },
+    discussed: { text: '💬 Discussed', class: 'badge-info' },
+    abandoned: { text: '❌ Abandoned', class: 'badge-warning' },
+  };
+  return badges[status] || { text: status, class: 'badge-info' };
+}
+
+function getTrendIcon(direction) {
+  const icons = {
+    up: '↑',
+    down: '↓',
+    stable: '→',
+    new: '★',
+  };
+  return icons[direction] || '➡️';
+}
+
+function getInitials(name) {
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function openThread(channelId, threadTs) {
+  if (!channelId || !threadTs) return;
+  
+  // Generate Slack deep link
+  const slackUrl = `slack://channel?team=&id=${channelId}&thread_ts=${threadTs}`;
+  window.open(slackUrl, '_blank');
+}
+
+function copySuggestion(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showSuccess('Copied to clipboard!');
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+  });
+}
