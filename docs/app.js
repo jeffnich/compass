@@ -40,7 +40,6 @@ async function loadStats() {
     const res = await fetch(`${API_BASE}/stats`);
     const stats = await res.json();
     
-    document.getElementById('stat-total').textContent = commands.length;
     document.getElementById('stat-uses').textContent = stats.overall.total_commands;
     document.getElementById('stat-success').textContent = stats.overall.success_rate + '%';
   } catch (err) {
