@@ -89,6 +89,40 @@ const DEMO_STATS = {
   cost: "$4.20"
 };
 
+const DEMO_DATA = {
+  overview: {
+    messages: 1247,
+    channels: 12,
+    users: 18,
+    commands: 82,
+    topics: 8
+  },
+  decisions: [],
+  questions: [],
+  topics: [
+    { word: "mobile", count: 45 },
+    { word: "api", count: 38 },
+    { word: "design", count: 32 },
+    { word: "performance", count: 28 },
+    { word: "security", count: 24 },
+    { word: "infrastructure", count: 21 },
+    { word: "integration", count: 18 },
+    { word: "compliance", count: 15 }
+  ],
+  activity: [
+    { user: "Sarah", messages: 142, commands: 18 },
+    { user: "Mike", messages: 98, commands: 12 },
+    { user: "Alex", messages: 87, commands: 9 },
+    { user: "Jordan", messages: 73, commands: 7 },
+    { user: "Chris", messages: 64, commands: 8 }
+  ],
+  suggestions: [
+    "What were the key decisions from last week's product meeting?",
+    "Summarize the API redesign discussion",
+    "What open questions do we have about mobile landscape mode?"
+  ]
+};
+
 const DEMO_INSIGHTS = [
   {
     id: 1,
@@ -145,3 +179,10 @@ const DEMO_INSIGHTS = [
     participants: ["Pat", "Sam"]
   }
 ];
+
+// Populate DEMO_DATA with DEMO_INSIGHTS
+DEMO_DATA.decisions = DEMO_INSIGHTS.filter(i => i.type === 'decision');
+DEMO_DATA.questions = DEMO_INSIGHTS.filter(i => i.type === 'question');
+
+// Expose globally for insights page
+window.DEMO_DATA = DEMO_DATA;
