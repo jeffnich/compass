@@ -5,7 +5,6 @@
 
 const API_BASE = window.location.origin + '/api/insights';
 let currentTimeRange = 7;
-const DEMO_MODE = window.DEMO_DATA !== undefined;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
@@ -115,13 +114,8 @@ async function loadDashboard() {
 
 async function loadOverview() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { stats: window.DEMO_DATA.overview };
-    } else {
-      const response = await fetch(`${API_BASE}/overview?days=${currentTimeRange}`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/overview?days=${currentTimeRange}`);
+    const data = await response.json();
     
     if (data.stats) {
       document.getElementById('stat-messages').textContent = formatNumber(data.stats.messages);
@@ -137,13 +131,8 @@ async function loadOverview() {
 
 async function loadDecisions() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { decisions: window.DEMO_DATA.decisions };
-    } else {
-      const response = await fetch(`${API_BASE}/decisions?days=${currentTimeRange}&limit=20`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/decisions?days=${currentTimeRange}&limit=20`);
+    const data = await response.json();
     
     const container = document.getElementById('decisions-list');
     const countBadge = document.getElementById('decisions-count');
@@ -168,13 +157,8 @@ async function loadDecisions() {
 
 async function loadQuestions() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { questions: window.DEMO_DATA.questions };
-    } else {
-      const response = await fetch(`${API_BASE}/questions?status=open&days=${currentTimeRange}&limit=20`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/questions?status=open&days=${currentTimeRange}&limit=20`);
+    const data = await response.json();
     
     const container = document.getElementById('questions-list');
     const countBadge = document.getElementById('questions-count');
@@ -199,13 +183,8 @@ async function loadQuestions() {
 
 async function loadTopics() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { topics: window.DEMO_DATA.topics };
-    } else {
-      const response = await fetch(`${API_BASE}/topics?days=${currentTimeRange}&limit=10`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/topics?days=${currentTimeRange}&limit=10`);
+    const data = await response.json();
     
     const container = document.getElementById('topics-list');
     
@@ -229,13 +208,8 @@ async function loadTopics() {
 
 async function loadActivity() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { activity: [] }; // Skip activity table in demo
-    } else {
-      const response = await fetch(`${API_BASE}/activity?days=${currentTimeRange}`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/activity?days=${currentTimeRange}`);
+    const data = await response.json();
     
     const container = document.getElementById('activity-table');
     
@@ -271,13 +245,8 @@ async function loadActivity() {
 
 async function loadSuggestions() {
   try {
-    let data;
-    if (DEMO_MODE) {
-      data = { suggestions: window.DEMO_DATA.suggestions };
-    } else {
-      const response = await fetch(`${API_BASE}/suggestions`);
-      data = await response.json();
-    }
+    const response = await fetch(`${API_BASE}/suggestions`);
+    const data = await response.json();
     
     const container = document.getElementById('suggestions-list');
     
@@ -315,15 +284,23 @@ function renderDecisionCard(decision) {
     .replace(/^Based on.*?:\n\n/i, '')
     .trim();
   
+  // Split into sentences for better readability
+  const formattedContent = content
+    .split(/\.\s+/)
+    .filter(s => s.trim())
+    .map(s => s.trim() + (s.endsWith('.') ? '' : '.'))
+    .join(' ');
+  
   return `
-    <div class="insight-card" ${clickHandler}>
+    <div class="insight-card decision-card" ${clickHandler}>
       <div class="insight-header">
-        <div class="insight-content">
-          <div class="insight-narrative">${escapeHtml(content)}</div>
-          <div class="insight-meta">
-            <span>${date}</span>
-            ${decision.channel_name ? `<span>#${decision.channel_name}</span>` : ''}
-          </div>
+        <div class="insight-badge decision-badge">Decision</div>
+      </div>
+      <div class="insight-content">
+        <div class="insight-narrative">${escapeHtml(formattedContent)}</div>
+        <div class="insight-meta">
+          <span>${date}</span>
+          ${decision.channel_name ? `<span>#${decision.channel_name}</span>` : ''}
         </div>
       </div>
     </div>
@@ -348,15 +325,23 @@ function renderQuestionCard(question) {
     .replace(/^Based on.*?:\n\n/i, '')
     .trim();
   
+  // Split into sentences for better readability
+  const formattedContent = content
+    .split(/\.\s+/)
+    .filter(s => s.trim())
+    .map(s => s.trim() + (s.endsWith('.') ? '' : '.'))
+    .join(' ');
+  
   return `
-    <div class="insight-card" ${clickHandler}>
+    <div class="insight-card question-card" ${clickHandler}>
       <div class="insight-header">
-        <div class="insight-content">
-          <div class="insight-narrative">${escapeHtml(content)}</div>
-          <div class="insight-meta">
-            <span>${date}</span>
-            ${question.channel_name ? `<span>#${question.channel_name}</span>` : ''}
-          </div>
+        <div class="insight-badge question-badge">Question</div>
+      </div>
+      <div class="insight-content">
+        <div class="insight-narrative">${escapeHtml(formattedContent)}</div>
+        <div class="insight-meta">
+          <span>${date}</span>
+          ${question.channel_name ? `<span>#${question.channel_name}</span>` : ''}
         </div>
       </div>
     </div>
