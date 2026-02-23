@@ -1,4 +1,5 @@
 const API_BASE = 'http://localhost:3002/api';
+const IS_DEMO = typeof DEMO_COMMANDS !== 'undefined';
 
 let commands = [];
 let currentCommand = null;
@@ -20,11 +21,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[name="cmd-type"]').forEach(radio => {
     radio.addEventListener('change', toggleCommandType);
   });
+  
+  // Hide edit buttons in demo mode
+  if (IS_DEMO) {
+    document.getElementById('new-cmd-btn').style.display = 'none';
+  }
 });
 
 // Load commands
 async function loadCommands() {
   try {
+    if (IS_DEMO) {
+      commands = DEMO_COMMANDS;
+      renderCommands();
+      return;
+    }
+    
     const res = await fetch(`${API_BASE}/commands`);
     commands = await res.json();
     renderCommands();
@@ -37,6 +49,13 @@ async function loadCommands() {
 // Load stats
 async function loadStats() {
   try {
+    if (IS_DEMO) {
+      document.getElementById('stat-total').textContent = DEMO_STATS.total;
+      document.getElementById('stat-uses').textContent = DEMO_STATS.uses;
+      document.getElementById('stat-success').textContent = DEMO_STATS.successRate;
+      return;
+    }
+    
     const res = await fetch(`${API_BASE}/stats`);
     const stats = await res.json();
     
@@ -51,6 +70,11 @@ async function loadStats() {
 // Load costs
 async function loadCosts() {
   try {
+    if (IS_DEMO) {
+      document.getElementById('stat-cost').textContent = DEMO_STATS.cost;
+      return;
+    }
+    
     const res = await fetch(`${API_BASE}/stats/costs`);
     const costs = await res.json();
     

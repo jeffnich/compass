@@ -1,63 +1,147 @@
-// Demo data for GitHub Pages demo
-window.DEMO_DATA = {
-  decisions: [
-    {
-      id: 1,
-      content: `After evaluating multiple payment providers, Sarah led the team to a decision on Stripe for the new checkout flow. Mike initially raised concerns about the 2.9% + 30¢ transaction fees, especially given their projected 500-1000 monthly transactions initially scaling to 5000+ within six months.
-
-However, the team consensus leaned toward Stripe based on three key factors: superior API documentation, cleaner UI components compared to PayPal, and the team's positive past experience with the platform. While the cost difference with PayPal was minimal for their volume, Stripe's developer experience was deemed worth the investment.
-
-The decision was finalized with Mike committing to start integration the following Monday, targeting a working prototype by Wednesday for design review. The goal is to have the checkout flow live by end of Q1.`,
-      channel_id: 'C_PRODUCT',
-      thread_ts: '1234567890.123456',
-      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 2,
-      content: `During the security review, Mike identified a critical vulnerability: API keys were being stored in plain text in the database. Carlos immediately agreed this was a P0 issue requiring immediate attention.
-
-Sarah made the executive decision to pause all other development work to address the security risk. The team couldn't afford to wait given the exposure. Mike estimated 3-4 days to implement AWS KMS integration, migrate existing keys, and update all access patterns.
-
-The decision was made to ship the fix by Friday EOD, with Mike committing to have a pull request ready by Thursday for team review. This security-first approach reflects the team's commitment to protecting customer data over feature velocity.`,
-      channel_id: 'C_ENG',
-      thread_ts: '1234567891.123456',
-      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ],
-  questions: [
-    {
-      id: 3,
-      content: `Alex raised an important question while working on the mobile navigation redesign: should the app support landscape mode on tablets, and if so, how should the navigation behave?
-
-Sarah requested analytics from Jen to inform the decision. The data showed that 15% of tablet users rotate to landscape at some point during their sessions - a significant enough portion to warrant support.
-
-However, the critical question remained unresolved: should the navigation collapse to a hamburger menu in landscape mode, or stay expanded to take advantage of the wider viewport? This decision is currently blocking the mobile redesign work scheduled for next sprint. The team needs to decide on the UX pattern before Alex can finalize the designs.`,
-      channel_id: 'C_DESIGN',
-      thread_ts: '1234567892.123456',
-      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ],
-  topics: [
-    { topic_name: 'payment', current_count: 15, trend_direction: 'stable' },
-    { topic_name: 'security', current_count: 12, trend_direction: 'up' },
-    { topic_name: 'mobile', current_count: 10, trend_direction: 'stable' },
-    { topic_name: 'design', current_count: 8, trend_direction: 'down' },
-    { topic_name: 'database', current_count: 7, trend_direction: 'stable' },
-    { topic_name: 'integration', current_count: 6, trend_direction: 'stable' },
-    { topic_name: 'performance', current_count: 5, trend_direction: 'up' },
-    { topic_name: 'testing', current_count: 4, trend_direction: 'stable' }
-  ],
-  overview: {
-    messages: 245,
-    channels: 5,
-    users: 8,
-    commands: 42,
-    topics: 8
+// Demo data for GitHub Pages static demo
+const DEMO_COMMANDS = [
+  {
+    name: "prd",
+    description: "Generate Product Requirements Document",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 24, last7d: 8, last30d: 24 }
   },
-  suggestions: [
-    { suggestion_text: '/compass decisions payment - Review payment provider discussions' },
-    { suggestion_text: '/compass open-questions security - Check security blockers' },
-    { suggestion_text: '/compass summarize - Summarize recent team discussions' },
-    { suggestion_text: '/compass prd mobile-app - Generate mobile app PRD' }
-  ]
+  {
+    name: "summarize",
+    description: "Summarize thread or channel",
+    type: "llm",
+    model: "openai",
+    enabled: true,
+    usage: { total: 47, last7d: 15, last30d: 47 }
+  },
+  {
+    name: "decisions",
+    description: "Extract key decisions with context",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 31, last7d: 12, last30d: 31 }
+  },
+  {
+    name: "open-questions",
+    description: "Extract unresolved questions from discussion",
+    type: "llm",
+    model: "openai",
+    enabled: true,
+    usage: { total: 18, last7d: 6, last30d: 18 }
+  },
+  {
+    name: "design-review",
+    description: "Review design with context",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 12, last7d: 4, last30d: 12 }
+  },
+  {
+    name: "api-spec",
+    description: "Generate API specification",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 9, last7d: 3, last30d: 9 }
+  },
+  {
+    name: "retro",
+    description: "Generate sprint retrospective",
+    type: "llm",
+    model: "openai",
+    enabled: true,
+    usage: { total: 15, last7d: 5, last30d: 15 }
+  },
+  {
+    name: "user-story",
+    description: "Convert feature idea to user stories",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 22, last7d: 7, last30d: 22 }
+  },
+  {
+    name: "tech-spec",
+    description: "Generate technical specification",
+    type: "llm",
+    model: "anthropic",
+    enabled: true,
+    usage: { total: 14, last7d: 5, last30d: 14 }
+  },
+  {
+    name: "action-items",
+    description: "Extract action items from discussion",
+    type: "llm",
+    model: "openai",
+    enabled: true,
+    usage: { total: 28, last7d: 10, last30d: 28 }
+  }
+];
+
+const DEMO_STATS = {
+  total: 10,
+  uses: 82,
+  successRate: "94%",
+  cost: "$4.20"
 };
+
+const DEMO_INSIGHTS = [
+  {
+    id: 1,
+    type: "decision",
+    content: "After reviewing the API options, Sarah decided the team should move forward with Stripe for payment processing. Mike raised concerns about cost, but the superior developer experience and documentation won out. The team will start integration next sprint with a target ship date of end of Q1.",
+    timestamp: "2024-02-20T15:30:00Z",
+    channel: "product-team",
+    message_ts: "1708445400.123456",
+    participants: ["Sarah", "Mike"]
+  },
+  {
+    id: 2,
+    type: "decision",
+    content: "The design team decided to move forward with the redesigned onboarding flow after testing showed a 40% improvement in completion rates. Initial concerns about mobile performance were addressed by lazy-loading the tutorial videos.",
+    timestamp: "2024-02-19T10:15:00Z",
+    channel: "design",
+    message_ts: "1708339500.234567",
+    participants: ["Alex", "Jordan"]
+  },
+  {
+    id: 3,
+    type: "decision",
+    content: "Engineering chose to migrate from REST to GraphQL for the mobile API. While this will require more upfront work, the team agreed the flexibility and performance gains justify the investment. Migration is scheduled for Q2.",
+    timestamp: "2024-02-18T14:45:00Z",
+    channel: "engineering",
+    message_ts: "1708271100.345678",
+    participants: ["Chris", "Taylor"]
+  },
+  {
+    id: 4,
+    type: "question",
+    content: "Alex raised the question of whether the mobile app should support landscape mode on tablets. Sarah asked for usage analytics, and Jen found that 15% of users rotate to landscape. However, the team hasn't decided whether the nav should collapse or stay expanded. This is blocking the mobile redesign work scheduled for next sprint.",
+    timestamp: "2024-02-21T11:20:00Z",
+    channel: "product-team",
+    message_ts: "1708516800.456789",
+    participants: ["Alex", "Sarah", "Jen"]
+  },
+  {
+    id: 5,
+    type: "question",
+    content: "The team is still unsure about the data retention policy for deleted user accounts. Legal said 90 days, but engineering noted that could complicate GDPR compliance. Morgan is reaching out to the compliance team for guidance before the privacy policy update ships next month.",
+    timestamp: "2024-02-20T09:00:00Z",
+    channel: "legal-tech",
+    message_ts: "1708416000.567890",
+    participants: ["Morgan", "Legal Team"]
+  },
+  {
+    id: 6,
+    type: "question",
+    content: "During the infrastructure review, the team questioned whether to use AWS Lambda or ECS for the new notification service. Pat highlighted cost concerns with Lambda at scale, while Sam pointed out the operational overhead of managing ECS clusters. DevOps is running cost projections for both options before the Q2 planning meeting.",
+    timestamp: "2024-02-17T16:30:00Z",
+    channel: "infrastructure",
+    message_ts: "1708191000.678901",
+    participants: ["Pat", "Sam"]
+  }
+];

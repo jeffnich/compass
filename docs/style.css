@@ -226,9 +226,15 @@ header h1 {
 
 /* === Command List === */
 .command-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
+}
+
+@media (max-width: 1024px) {
+  .command-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .command-card {
@@ -240,11 +246,11 @@ header h1 {
   border: 1px solid var(--gray-200);
   border-left: 3px solid var(--gray-400);
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-6);
+  flex-direction: column;
+  gap: var(--space-4);
   transition: all var(--transition-base);
   overflow: hidden;
+  min-height: 180px;
 }
 
 .command-card::before {
@@ -319,6 +325,9 @@ header h1 {
   display: flex;
   gap: var(--space-2);
   flex-shrink: 0;
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gray-200);
 }
 
 /* === Badges === */
