@@ -156,7 +156,7 @@ header h1 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: var(--warning-600);
+  background: #8b5cf6;
   color: white;
   line-height: 1;
   vertical-align: middle;
