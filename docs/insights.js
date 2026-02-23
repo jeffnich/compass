@@ -122,7 +122,6 @@ async function loadOverview() {
       document.getElementById('stat-channels').textContent = formatNumber(data.stats.channels);
       document.getElementById('stat-users').textContent = formatNumber(data.stats.users);
       document.getElementById('stat-commands').textContent = formatNumber(data.stats.commands);
-      document.getElementById('stat-topics').textContent = formatNumber(data.stats.topics);
     }
   } catch (error) {
     console.error('Error loading overview:', error);

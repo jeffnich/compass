@@ -94,8 +94,7 @@ const DEMO_DATA = {
     messages: 1247,
     channels: 12,
     users: 18,
-    commands: 82,
-    topics: 8
+    commands: 82
   },
   decisions: [],
   questions: [],
